@@ -46,14 +46,13 @@ if ($video_url) {
 		die "Couldn't create $dir: $@";
 	}
 
-	my $command =
-	    'rtmpdump -q -v -r "'
-	  . $video_url
-	  . '" -a "'
-	  . $video_id
-	  . '" -f "LNX 10,0,45,2" -y "'
-	  . $stream_name . '"';
-
+	my $command = 'rtmpdump -q -v -r "' . $video_url . '" -f "LNX 10,0,45,2"';
+	if ($video_id) {
+		$command .= ' -a "' . $video_id . '" ';
+	}
+	if ($stream_name) {
+		$command .= ' -y "' . $stream_name . '"';
+	}
 	if ($stop) {
 		$command .= ' --stop ' . $stop . ' -o "' . $file . '"';
 	}
@@ -72,24 +71,39 @@ sub get_video_url {
 	my $url     = shift;
 	my $amf_bin = get($url);
 
+	my $video_url;
+	my $videi_id;
+	my $stream_name;
+
 	if ( $amf_bin =~ m|(rtmp://[^/]+/ustreamVideo/(\d+))|m ) {
-		my $video_url   = $1;
-		my $video_id    = 'ustreamVideo/' . $2;
-		my $stream_name = 'streams/live';
+		$video_url   = $1;
+		$video_id    = 'ustreamVideo/' . $2;
+		$stream_name = 'streams/live';
 		return ( $video_url, $video_id, $stream_name );
 	}
 
-	# added for dommune,2.5D,etc
 	if ( $amf_bin =~ m|(rtmp://(\w+).live.edgefcs.net/(\w+))|m ) {
-		my $video_url   = $1;
-		my $video_id    = $3;
-		my $stream_name = '';
+		$video_url = $1;
+		$video_id  = $3;
 
 		if ( $amf_bin =~ m|(ustream-(\w+)@(\w+))|m ) {
 			$stream_name = $1;
 			return ( $video_url, $video_id, $stream_name );
 		}
 		if ( $amf_bin =~ m|(stream_live_(\w+))|m ) {
+			$stream_name = $1;
+			return ( $video_url, $video_id, $stream_name );
+		}
+
+	}
+
+	if ( $amf_bin =~ m|(rtmp://ustreamlivefs.fplive.net/(\w+))|m ) {
+		$video_url = $1;
+		$video_id  = $2;
+
+		if ( $amf_bin =~ m|(stream_live_(\w+))|m ) {
+			$video_url .= '//' . $1;
+			$video_id  .= '//' . $1;
 			$stream_name = $1;
 			return ( $video_url, $video_id, $stream_name );
 		}
@@ -111,9 +125,7 @@ sub get_amf_data {
 		return;
 	}
 	my $title = $channel_id;
-	if ( $text =~
-/property\=\"og\:url\"\s+content\=\"http\:\/\/www.ustream.tv\/channel\/([^\"]+)\"/m
-	  )
+	if ( $text =~ /property\=\"og\:url\"\s+content\=\"http\:\/\/www.ustream.tv\/channel\/([^\"]+)\"/m )
 	{
 		$title = $1;
 	}
