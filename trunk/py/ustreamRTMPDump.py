@@ -18,6 +18,7 @@ def getVideoData(url):
     m = re.search("Channel\sID\:\s+(\d+)", html)
     if (m):
         channelId = m.group(1)
+	print "channelId:" + channelId
  
     # Extract the channel title from the HTML
     channelTitle = None
@@ -25,14 +26,20 @@ def getVideoData(url):
             "ustream\.tv\/(?:channel\/)?([^\"]+)\"", html)
     if (m):
         channelTitle = m.group(1)
+	print "channelTitle:" + channelTitle
  
     amfContent = None
     if (channelId):
         amfUrl = ("http://cdngw.ustream.tv/Viewer/getStream/1/"
         + channelId + ".amf")
+
+	print "amfUrl:" + amfUrl
+
         response = urllib2.urlopen(amfUrl)
         amfContent = response.read()
  
+	print "amfContent:" + amfContent + "\n"
+
         rtmpUrl = re.search("(rtmp\:\/\/[^\x00]+)", amfContent).group(1)
         f = open('tmp.txt', 'w')
         f.write(amfContent)
