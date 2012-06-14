@@ -20,7 +20,7 @@ square-enix-music-live1
 synth-bar-blue-monday
 techno-zanmai
 yokohama-jazzken
-キューンch
+#キューンch
 ユ-ストリーム
 #第2回お笑い講世界選手権大会
 soshitearuiha
