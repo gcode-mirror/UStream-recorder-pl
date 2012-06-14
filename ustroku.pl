@@ -66,7 +66,7 @@ sub get_video_data {
 
 	# Extract the channel title from the HTML
 	my $channel_title;
-	if ( $html =~ /property\=\"og\:url\"\s+content\=\"http\:\/\/www¥.ustream\.tv\/(?:channel\/)?([^\"]+)\"/m )
+	if ( $html =~ /property\=\"og\:url\"\s+content\=\"http\:\/\/www\.ustream\.tv\/(?:channel\/)?([^\"]+)\"/m )
 	{
 		$channel_title = $1;
 	}else{
