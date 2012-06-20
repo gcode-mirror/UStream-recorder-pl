@@ -6,7 +6,7 @@ do
 	COMMAND="perl ustroku.pl http://www.ustream.tv/channel/${CHANNEL} ${DSTDIR}/${CHANNEL} 43200 & "
 	LOG="/var/log/crond/ustroku_${CHANNEL}.log"
 
-	if [ `ps -ef | grep "$COMMAND" | grep -v grep| wc -l` -gt 0 ] ; then
+	if [ `ps -ef | grep "${DSTDIR}/${CHANNEL}" | grep -v grep| wc -l` -gt 0 ] ; then
 		echo "already running : ${COMMAND}" >> "${LOG}"
 	else
 		${COMMAND} >> "${LOG}"
